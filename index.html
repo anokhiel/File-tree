@@ -3,10 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
- 
     
-    <title>Дерево файлов</title>
+    <title>Мои шпаргалки</title>
         <styles-test></styles-test>
   </head>
   <body style='padding-left:150px'>
@@ -15,21 +13,20 @@
     <div></div>
     <ul is="tree-view" json="folder.php?folder=<?php echo($_GET['folder']); ?>" ></ul>    
     <div style='display:none; position:fixed; top:20px; left:50px; padding:50px'>
-        <div style='cursor:pointer; color:red; float:right' onclick='$(this).parent().hide()'>&times;</div>
+        <div style='cursor:pointer; color:red; float:right' onclick='this.parentElement.style.display="none"'>&times;</div>
         <textarea id='fileco' style="width:750px; height:550px;"></textarea></div>
   </body>
   <script>
       function showme(o){
-         
-          $('#fileco').parent().show();
-          $.ajax({
-		type: 'POST',
-		url: 'getfile.php',
-		data: 'file='+o,
-		success: function(e) {
-					$('#fileco').val(e);
-					}
-	});
+         var fileco=document.getElementById('fileco');
+         fileco.parentElement.style.display='block';   
+      var request = new XMLHttpRequest();
+    request.open('POST', 'getfile.php');
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    request.addEventListener("readystatechange", ()=>{
+        fileco.value=request.responseText;
+    });
+    request.send('file='+o);
       }
 
 class TreeView extends HTMLUListElement {
@@ -60,7 +57,7 @@ class TreeView extends HTMLUListElement {
   }
 
   childs(liParent, data) {
-    // Новый неуполядоченный список для детей
+    // Create a new unordered list for children
     const childList = document.createElement(`ul`);
     data.children.forEach(child => {
       const liChild = document.createElement(`li`);
@@ -73,7 +70,7 @@ class TreeView extends HTMLUListElement {
     liParent.appendChild(childList);
   }
 
-  // Спрятять детей
+  // Hide childs function
   hide() {
     var ulChildren = Array.from(this.querySelectorAll(`ul`));
     var liChildren = Array.from(this.querySelectorAll(`li`));

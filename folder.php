@@ -1,5 +1,6 @@
 <?php
-$folder=$_GET['folder']?'root/'.$_GET['folder']:'root';
+define('root','your/root/dir');
+$folder=$_GET['folder']?root.'/'.$_GET['folder']:root;
 
 $ar=json_encode(array('root'=>array(getfilelist($folder))));
 print($ar);
