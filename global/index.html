@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <title>LARAVEL</title>
+        <styles-test></styles-test>
+  </head>
+  <body style='padding-left:150px'>
+    
+      <h1><a href="public">К сайту</a></h1>
+    <div></div>
+    
+    <ul is="tree-view" json="cues/folder.php" ></ul>    
+    <div style='display:none; position:fixed; top:20px; left:50px; padding:50px'>
+        <div style='cursor:pointer; color:red; float:right' onclick='this.parentElement.style.display="none"'>&times;</div>
+        <textarea id='fileco' style="width:750px; height:550px;"></textarea></div>
+  </body>
+  <script>
+      
+          function showme(o){
+               var fileco=document.getElementById('fileco');
+         fileco.parentElement.style.display='block';   
+      var request = new XMLHttpRequest();
+    request.open('POST', 'cues/getfile.php');
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    request.addEventListener("readystatechange", ()=>{
+        fileco.value=request.responseText;
+    });
+    request.send('file='+o);
+      }
+
+class TreeView extends HTMLUListElement {
+  constructor() {
+    super();
+    this.dirJSON = this.getAttribute('json');
+    this.data = {};
+    this.getJSON();
+  }
+
+  getJSON() {
+    const request = new XMLHttpRequest();
+    request.open('GET', this.dirJSON);
+    request.responseType = 'json';
+    request.send();
+    request.onload = () => {
+      this.data = request.response;
+      this.data["root"].forEach(data => {
+        const liParent = document.createElement(`li`);
+        liParent.innerHTML = data.value;
+        this.appendChild(liParent);
+        if (data.children !== undefined) {
+          this.childs(liParent, data);
+          this.hide();
+        }
+      });
+    };
+  }
+
+  childs(liParent, data) {
+    // Create a new unordered list for children
+    const childList = document.createElement(`ul`);
+    data.children.forEach(child => {
+      const liChild = document.createElement(`li`);
+      liChild.innerHTML = child.value;
+      childList.appendChild(liChild);
+      if (child.children !== undefined) {
+        this.childs(liChild, child);
+      }
+    });
+    liParent.appendChild(childList);
+  }
+
+  // Hide childs function
+  hide() {
+    var ulChildren = Array.from(this.querySelectorAll(`ul`));
+    var liChildren = Array.from(this.querySelectorAll(`li`));
+    ulChildren.forEach(ul => {
+      ul.style.display = `none`;
+    });
+    liChildren.forEach(li => {
+      var childrenText = li.childNodes[0];
+      if (li.querySelector(`ul`) != null) {
+        const span = document.createElement(`span`);
+        span.textContent = childrenText.textContent;
+        span.style.cursor = `pointer`;
+        childrenText.parentNode.insertBefore(span, childrenText);
+        childrenText.parentNode.removeChild(childrenText);
+        span.onclick = (event) => {
+          var next = event.target.nextElementSibling;
+          if (next.style.display == ``) {
+            next.style.display = `none`;
+          }
+          else {
+            next.style.display = ``;
+          }
+        }
+      }
+    });
+  }
+}
+
+customElements.define('tree-view', TreeView, { extends: 'ul' });
+class Styles extends HTMLElement {
+
+  constructor() {
+
+    super();
+
+    const linkElem = document.createElement('link');
+    linkElem.setAttribute('rel', 'stylesheet');
+    linkElem.setAttribute('href', 'cues/styles.css?r=sdsrr4e');
+
+    document.head.appendChild(linkElem);
+
+  }
+}
+
+customElements.define('styles-test', Styles);
+       </script>
+</html>

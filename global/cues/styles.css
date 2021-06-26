@@ -1,0 +1,35 @@
+h1, h2, ul, p {
+  font-family: "times";
+  font-size:1.1em;
+}
+ul {
+  transition: transform 1s;
+}
+
+@keyframes RGB {
+  0% {
+    color: red;
+  }
+  20% {
+    color: orange;
+  }
+  40% {
+    color: yellow;
+  }
+  60% {
+    color: green;
+  }
+  80% {
+    color: blue;
+  }
+  100% {
+    color: purple;
+  }
+}
+
+::marker, strong{
+  animation-name: RGB;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
